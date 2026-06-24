@@ -1,0 +1,36 @@
+# Environment — NEVER commit .env files with secrets
+# Only .env.example (empty templates) are allowed
+.env
+.env.*
+!.env.example
+*/.env
+*/.env.*
+!*/.env.example
+
+# Build outputs
+dist/
+.next/
+out/
+
+# Dependencies
+node_modules/
+server/node_modules/
+web/node_modules/
+
+# Logs
+*.log
+settlements.jsonl
+
+# Foundry
+# broadcast/ contains signed tx data
+# keystore/ contains encrypted keys (store in ~/.foundry/keystores/ instead)
+# lib/ is installed via forge install, not committed
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/keystore/
+contracts/lib/
+
+# Misc
+.DS_Store
+*.tsbuildinfo
