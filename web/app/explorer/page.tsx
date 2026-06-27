@@ -53,15 +53,14 @@ export default function ExplorerPage() {
       if (params[`${opId}:url`]) qp.set("url", params[`${opId}:url`]);
       if (qp.toString()) url += "?" + qp.toString();
 
-      const res = await fetch(`${HUB_API}${url}`, { method });
-      const body = await res.json();
-      const paymentResp = res.headers.get("PAYMENT-RESPONSE") || res.headers.get("X-PAYMENT-RESPONSE");
+      const res = await fetch(`${HUB_API}/api/try?path=${encodeURIComponent(url)}`);
+      const data = (await res.json()) as { status: number; body: unknown; paymentResponse?: string; error?: string };
       setResults((r) => ({
         ...r,
         [opId]: {
-          status: res.status,
-          body,
-          paymentResponse: paymentResp,
+          status: data.status ?? res.status,
+          body: data.body ?? data,
+          paymentResponse: data.paymentResponse ?? null,
         },
       }));
     } catch (err) {

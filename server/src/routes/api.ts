@@ -2,8 +2,29 @@ import { Router, type Request, type Response } from "express";
 import { createReadStream, existsSync, statSync, readFileSync } from "fs";
 import { resolve } from "path";
 import { getAttribution } from "../attribution/parse.js";
+import { buyerFetch } from "../client/buyer.js";
 
 const router = Router();
+
+// Explorer proxy — makes a paid x402 call on behalf of the explorer UI
+router.get("/api/try", async (req: Request, res: Response) => {
+  const path = String(req.query.path ?? "");
+  if (!path.startsWith("/")) {
+    res.status(400).json({ error: "path must start with /" });
+    return;
+  }
+  const HUB_DOMAIN = process.env.HUB_DOMAIN ?? `http://localhost:${process.env.PORT ?? 3001}`;
+  const url = `${HUB_DOMAIN}${path}`;
+  try {
+    const upstream = await buyerFetch(url);
+    const body = await upstream.json().catch(() => null);
+    const paymentResponse = upstream.headers.get("PAYMENT-RESPONSE") ?? upstream.headers.get("X-PAYMENT-RESPONSE");
+    res.status(upstream.status).json({ status: upstream.status, body, paymentResponse });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(502).json({ error: msg });
+  }
+});
 
 // Attribution checker — free, no payment
 router.get("/api/attribution/:txHash", async (req: Request, res: Response) => {
