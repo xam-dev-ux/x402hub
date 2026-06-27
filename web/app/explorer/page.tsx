@@ -155,7 +155,7 @@ export default function ExplorerPage() {
                 <div className="mt-2 space-y-2">
                   <p className="text-xs text-zinc-500">
                     HTTP {result.status as number}
-                    {result.paymentResponse && (
+                    {!!result.paymentResponse && (
                       <span className="ml-4 text-green-400">payment settled</span>
                     )}
                   </p>
