@@ -7,6 +7,8 @@ const REQUIRED: Record<string, string> = {
   HUB_ADDRESS: "0x wallet address",
   FACILITATOR_URL: "https://api.cdp.coinbase.com/platform/v2/x402",
   BUILDER_CODE: "registered Base Builder Code",
+  CDP_API_KEY_ID: "CDP API key ID from portal.cdp.coinbase.com",
+  CDP_API_KEY_SECRET: "CDP API key secret from portal.cdp.coinbase.com",
 };
 
 for (const [key, hint] of Object.entries(REQUIRED)) {

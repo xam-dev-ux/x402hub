@@ -50,7 +50,9 @@ The deployer private key must never appear in any file — not in `.env`, not an
 | `BUILDER_CODE` | `bc_rfgagdy3` — registered at dashboard.base.org |
 | `HUB_PRIVATE_KEY` | Hub wallet private key (`0x`-prefixed). Hot — lives on the server. |
 | `HUB_ADDRESS` | Hub wallet public address. Receives incoming USDC settlements. |
-| `FACILITATOR_URL` | `https://api.cdp.coinbase.com/platform/v2/x402` — no API key needed; usage tracked by `HUB_ADDRESS` |
+| `FACILITATOR_URL` | `https://api.cdp.coinbase.com/platform/v2/x402` |
+| `CDP_API_KEY_ID` | CDP API key ID from `portal.cdp.coinbase.com` → API Keys. Required for verify + settle. |
+| `CDP_API_KEY_SECRET` | CDP API key secret (same portal). |
 | `HUB_DOMAIN` | Public domain of deployed server (no trailing slash) |
 | `BASE_RPC_URL` | Base RPC (default: `https://mainnet.base.org`) |
 | `PORT` | Server port (default: 3001) |
