@@ -5,9 +5,9 @@ Unified x402 API gateway on Base mainnet. Proxies curated paid APIs under one UR
 ## Architecture
 
 ```
-caller ──USDC──▶ x402Hub (a = BUILDER_CODE)
+caller ──USDC──▶ x402Hub (a = bc_rfgagdy3)
                    │
-                   ├──USDC──▶ upstream API (s = BUILDER_CODE)
+                   ├──USDC──▶ upstream API (s = bc_rfgagdy3)
                    │
                    └──gas──▶  RouteRegistry.logAttribution()
                                └─ route + builderCode + upstreamTxHash stored on Base
@@ -47,7 +47,7 @@ The deployer private key must never appear in any file — not in `.env`, not an
 
 | Variable | Description |
 |---|---|
-| `BUILDER_CODE` | Base Builder Code from dashboard.base.org (format: `^[a-z0-9_]{1,32}$`) |
+| `BUILDER_CODE` | `bc_rfgagdy3` — registered at dashboard.base.org |
 | `HUB_PRIVATE_KEY` | Hub wallet private key (`0x`-prefixed). Hot — lives on the server. |
 | `HUB_ADDRESS` | Hub wallet public address. Receives incoming USDC settlements. |
 | `FACILITATOR_URL` | `https://api.cdp.coinbase.com/platform/v2/x402` — no API key needed; usage tracked by `HUB_ADDRESS` |

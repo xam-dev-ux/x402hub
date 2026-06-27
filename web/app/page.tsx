@@ -52,13 +52,13 @@ export default function Home() {
             <span className="text-zinc-500">caller</span>
             <span className="text-zinc-600">──── USDC ────▶</span>
             <span className="text-blue-400">x402Hub</span>
-            <span className="text-zinc-500 ml-2">settlement 1: <code className="text-zinc-300">a = BUILDER_CODE</code></span>
+            <span className="text-zinc-500 ml-2">settlement 1: <code className="text-zinc-300">a = bc_rfgagdy3</code></span>
           </div>
           <div className="flex items-center gap-2 ml-16">
             <span className="text-blue-400">x402Hub</span>
             <span className="text-zinc-600">──── USDC ────▶</span>
             <span className="text-zinc-300">upstream API</span>
-            <span className="text-zinc-500 ml-2">settlement 2: <code className="text-zinc-300">s = BUILDER_CODE</code></span>
+            <span className="text-zinc-500 ml-2">settlement 2: <code className="text-zinc-300">s = bc_rfgagdy3</code></span>
           </div>
           <div className="mt-4 pt-4 border-t border-zinc-800 text-zinc-500">
             Both settlements carry <code className="text-zinc-400">w = cdp_facil</code> from the CDP facilitator.
