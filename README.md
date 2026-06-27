@@ -182,7 +182,7 @@ forge script script/Deploy.s.sol \
   --broadcast \
   --verify \
   --verifier etherscan \
-  --verifier-url https://api.basescan.org/api \
+  --verifier-url "https://api.etherscan.io/v2/api?chainid=8453" \
   --etherscan-api-key $BASESCAN_API_KEY \
   -vvvv
 # Prompts for keystore password — key decrypted in memory only, never written to disk
@@ -222,7 +222,7 @@ forge verify-contract \
   src/RouteRegistry.sol:RouteRegistry \
   --rpc-url https://mainnet.base.org \
   --verifier etherscan \
-  --verifier-url https://api.basescan.org/api \
+  --verifier-url "https://api.etherscan.io/v2/api?chainid=8453" \
   --etherscan-api-key $BASESCAN_API_KEY \
   --constructor-args $(cast abi-encode "constructor(address)" $HUB_ADDRESS) \
   --watch
