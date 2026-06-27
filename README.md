@@ -115,7 +115,7 @@ Install forge-std (the only dependency):
 
 ```bash
 cd contracts
-forge install foundry-rs/forge-std --no-commit
+forge install foundry-rs/forge-std
 ```
 
 ### Run tests
