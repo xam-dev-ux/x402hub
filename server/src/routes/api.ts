@@ -13,7 +13,7 @@ router.get("/api/try", async (req: Request, res: Response) => {
     res.status(400).json({ error: "path must start with /" });
     return;
   }
-  const HUB_DOMAIN = process.env.HUB_DOMAIN ?? `http://localhost:${process.env.PORT ?? 3001}`;
+  const HUB_DOMAIN = process.env.HUB_DOMAIN || `http://localhost:${process.env.PORT ?? 3001}`;
   const url = `${HUB_DOMAIN}${path}`;
   try {
     const upstream = await buyerFetch(url);
