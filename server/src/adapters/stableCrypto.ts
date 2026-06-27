@@ -1,15 +1,17 @@
-/**
- * StableCrypto adapter (merit-systems/stablecrypto)
- * Base URL: https://stablecrypto.dev
- * Price: $0.01/call upstream → $0.015 hub price (1.5x markup)
- * Endpoints: spot prices, OHLCV, DeFi TVL
- */
 import type { Request } from "express";
 import type { UpstreamAdapter } from "./index.js";
 
 const BASE_URL = "https://stablecrypto.dev";
-const UPSTREAM_PRICE = "$0.01";
 const HUB_PRICE = "$0.015";
+const UPSTREAM_PRICE = "$0.01";
+
+function post(buyerFetch: typeof fetch, path: string, body: unknown) {
+  return buyerFetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
 
 export const stableCryptoAdapters: UpstreamAdapter[] = [
   {
@@ -20,11 +22,10 @@ export const stableCryptoAdapters: UpstreamAdapter[] = [
     upstreamPrice: UPSTREAM_PRICE,
     description: "Real-time spot price for a crypto asset in USD. Example: /prices/ethereum",
     mimeType: "application/json",
-    upstreamUrl: (req) =>
-      `${BASE_URL}/api/v1/prices/${encodeURIComponent(String(req.params.asset))}`,
+    upstreamUrl: () => `${BASE_URL}/api/coingecko/price`,
     call: async (req, buyerFetch) => {
-      const url = `${BASE_URL}/api/v1/prices/${encodeURIComponent(String(req.params.asset))}`;
-      return buyerFetch(url);
+      const id = String(req.params.asset).toLowerCase();
+      return post(buyerFetch, "/api/coingecko/price", { ids: [id], vs_currencies: ["usd"] });
     },
   },
   {
@@ -33,14 +34,12 @@ export const stableCryptoAdapters: UpstreamAdapter[] = [
     hubMethod: "GET",
     hubPrice: HUB_PRICE,
     upstreamPrice: UPSTREAM_PRICE,
-    description:
-      "24h OHLCV (open/high/low/close/volume) for a crypto asset. Example: /ohlcv/bitcoin",
+    description: "24h OHLCV (open/high/low/close/volume) for a crypto asset. Example: /ohlcv/bitcoin",
     mimeType: "application/json",
-    upstreamUrl: (req) =>
-      `${BASE_URL}/api/v1/ohlcv/${encodeURIComponent(String(req.params.asset))}`,
+    upstreamUrl: () => `${BASE_URL}/api/coingecko/ohlc`,
     call: async (req, buyerFetch) => {
-      const url = `${BASE_URL}/api/v1/ohlcv/${encodeURIComponent(String(req.params.asset))}`;
-      return buyerFetch(url);
+      const id = String(req.params.asset).toLowerCase();
+      return post(buyerFetch, "/api/coingecko/ohlc", { id, vs_currency: "usd", days: "1" });
     },
   },
   {
@@ -51,9 +50,9 @@ export const stableCryptoAdapters: UpstreamAdapter[] = [
     upstreamPrice: UPSTREAM_PRICE,
     description: "Total value locked (TVL) across major DeFi protocols.",
     mimeType: "application/json",
-    upstreamUrl: () => `${BASE_URL}/api/v1/defi/tvl`,
+    upstreamUrl: () => `${BASE_URL}/api/defillama/protocols`,
     call: async (_req, buyerFetch) => {
-      return buyerFetch(`${BASE_URL}/api/v1/defi/tvl`);
+      return post(buyerFetch, "/api/defillama/protocols", {});
     },
   },
 ];

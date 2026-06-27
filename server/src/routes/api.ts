@@ -3,25 +3,50 @@ import { createReadStream, existsSync, statSync, readFileSync } from "fs";
 import { resolve } from "path";
 import { getAttribution } from "../attribution/parse.js";
 import { buyerFetch } from "../client/buyer.js";
+import { allAdapters } from "./hub.js";
+
+function matchAdapter(reqPath: string) {
+  const [pathname, search] = reqPath.split("?");
+  const query = Object.fromEntries(new URLSearchParams(search ?? ""));
+  for (const adapter of allAdapters) {
+    const paramNames: string[] = [];
+    const regexStr = adapter.hubRoute.replace(/:(\w+)/g, (_: string, name: string) => {
+      paramNames.push(name);
+      return "([^/]+)";
+    });
+    const match = pathname.match(new RegExp(`^${regexStr}$`));
+    if (!match) continue;
+    const params: Record<string, string> = {};
+    paramNames.forEach((name, i) => { params[name] = match[i + 1]; });
+    return { adapter, params, query };
+  }
+  return null;
+}
 
 const router = Router();
 
-// Explorer proxy — makes a paid x402 call on behalf of the explorer UI
+// Explorer proxy — calls upstream adapter directly, bypassing hub x402 middleware
 router.get("/api/try", async (req: Request, res: Response) => {
   const path = String(req.query.path ?? "");
   if (!path.startsWith("/")) {
     res.status(400).json({ error: "path must start with /" });
     return;
   }
-  const HUB_DOMAIN = process.env.HUB_DOMAIN || `http://localhost:${process.env.PORT ?? 3001}`;
-  const url = `${HUB_DOMAIN}${path}`;
+  const matched = matchAdapter(path);
+  if (!matched) {
+    res.status(404).json({ error: `no adapter found for ${path}` });
+    return;
+  }
+  const { adapter, params, query } = matched;
+  const fakeReq = { params, query } as unknown as Request;
   try {
-    const upstream = await buyerFetch(url);
+    const upstream = await adapter.call(fakeReq, buyerFetch as unknown as typeof fetch);
     const body = await upstream.json().catch(() => null);
     const paymentResponse = upstream.headers.get("PAYMENT-RESPONSE") ?? upstream.headers.get("X-PAYMENT-RESPONSE");
-    res.status(upstream.status).json({ status: upstream.status, body, paymentResponse });
+    res.status(upstream.ok ? 200 : upstream.status).json({ status: upstream.status, body, paymentResponse });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
+    console.error(`[try] ${adapter.id} threw: ${msg}`);
     res.status(502).json({ error: msg });
   }
 });
